@@ -7,6 +7,9 @@ const auth = new google.auth.GoogleAuth({
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
+const statusColumn = "G"; // Cột trạng thái
+const timeColumn = "H"; // Cột tên người gửi
+
 const SHEET_ID = "1wDck3Pl8JhuaqQMyJKgVjc2os-DIAAmRM0bbDPyi7Kc";
 
 // Hàm lấy tên sheet theo ngày hiện tại (VD: "28/3")
@@ -23,8 +26,7 @@ async function updateLoginTime() {
     const SHEET_NAME = getSheetName();
     console.log(`📅 Đang cập nhật sheet: ${SHEET_NAME}`);
 
-    // Lấy dữ liệu cột F (trạng thái)
-    const rangeF = `${SHEET_NAME}!H2:H`;
+    const rangeF = `${SHEET_NAME}!${statusColumn}2:${statusColumn}`;
     const resF = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
       range: rangeF,
@@ -36,8 +38,7 @@ async function updateLoginTime() {
     let now = new Date();
     let formattedDate = now.toLocaleString("vi-VN", {hour: "2-digit", minute: "2-digit", hour12: false });
 
-    // Lấy dữ liệu cột G
-    const rangeG = `${SHEET_NAME}!I2:I`;
+    const rangeG = `${SHEET_NAME}!${timeColumn}2:${timeColumn}`;
     const resG = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
       range: rangeG,
@@ -52,13 +53,13 @@ async function updateLoginTime() {
       if ((fValue === "OK MÈO" || fValue === "SK 8K 10K" || fValue === "Đã Nhúng" ) && !gValue) {
         // Nếu cột F có giá trị "OK MÈO" mà cột G chưa có giá trị, thì cập nhật giá trị thời gian
         updates.push({
-          range: `${SHEET_NAME}!I${index + 2}`,
+          range: `${SHEET_NAME}!${timeColumn}${index + 2}`,
           values: [[formattedDate]],
         });
       } else if ((fValue !== "OK MÈO" && fValue !== "SK 8K 10K" && fValue !== "Đã Nhúng" ) && gValue) {
         // Nếu cột F không có giá trị "OK MÈO" mà cột G có giá trị, thì xóa giá trị cột G
         clearUpdates.push({
-          range: `${SHEET_NAME}!I${index + 2}`,
+          range: `${SHEET_NAME}!${timeColumn}${index + 2}`,
           values: [[""]],
         });
       }
