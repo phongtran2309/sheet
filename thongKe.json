@@ -1,90 +1,116 @@
 {
   "28/3": {
-    "Trưởng": 87,
-    "Hiếu": 158,
-    "Khu": 162,
-    "Vinh": 436,
-    "totalCount": 843
+    "counts": {
+      "Điệp": 142,
+      "Hiếu": 158,
+      "Trưởng": 87,
+      "Vinh": 432,
+      "Khu": 162
+    },
+    "totalCount": 981
   },
   "29/3": {
-    "Trưởng": 6,
-    "Hiếu": 120,
-    "Dũng": 38,
+    "counts": {
+      "Hiếu": 120,
+      "Trưởng": 6,
+      "Dũng": 38
+    },
     "totalCount": 164
   },
   "30/3": {
-    "Trưởng": 170,
-    "Hiếu": 292,
-    "Nam": 194,
-    "Điệp": 18,
-    "Khu": 249,
-    "Huy": 274,
-    "Dũng": 182,
-    "totalCount": 1379
+    "counts": {
+      "Huy": 274,
+      "Trưởng": 170,
+      "Dũng": 182,
+      "Nam": 194,
+      "Điệp": 18,
+      "Khu": 249,
+      "Hiếu": 290
+    },
+    "totalCount": 1377
   },
   "31/3": {
-    "Khu": 115,
-    "Dũng": 79,
+    "counts": {
+      "Khu": 115,
+      "Dũng": 79
+    },
     "totalCount": 194
   },
   "1/4": {
-    "Trưởng": 124,
-    "Nam": 80,
-    "Điệp": 125,
-    "Khu": 8,
-    "Dũng": 110,
+    "counts": {
+      "Trưởng": 124,
+      "Khu": 8,
+      "Dũng": 110,
+      "Điệp": 125,
+      "Nam": 80
+    },
     "totalCount": 447
   },
   "2/4": {
-    "Hiếu": 392,
-    "Nam": 101,
-    "Điệp": 103,
-    "Khu": 1,
-    "Đại": 104,
-    "Dũng": 2,
+    "counts": {
+      "Hiếu": 392,
+      "Đại": 104,
+      "Điệp": 103,
+      "Nam": 101,
+      "Dũng": 2,
+      "Khu": 1
+    },
     "totalCount": 703
   },
   "3/4": {
-    "Trưởng": 58,
-    "Nam": 145,
-    "Long": 55,
-    "Khu": 87,
-    "Huy": 650,
-    "Đại": 459,
+    "counts": {
+      "Khu": 87,
+      "Nam": 145,
+      "Trưởng": 58,
+      "Long": 55,
+      "Huy": 650,
+      "Đại": 459
+    },
     "totalCount": 1454
   },
   "4/4": {
-    "Dũng": 58,
-    "Thao": 368,
+    "counts": {
+      "Thao": 368,
+      "Dũng": 58
+    },
     "totalCount": 426
   },
   "5/4": {
-    "Trưởng": 72,
-    "Điệp": 319,
+    "counts": {
+      "Điệp": 319,
+      "Trưởng": 72
+    },
     "totalCount": 391
   },
   "6/4": {
+    "counts": {},
     "totalCount": 0
   },
   "7/4": {
-    "Trưởng": 76,
-    "Hiếu": 328,
-    "Nam": 60,
-    "Khu": 114,
-    "Đại": 106,
-    "Thao": 706,
+    "counts": {
+      "Khu": 114,
+      "Thao": 706,
+      "Hiếu": 328,
+      "Nam": 60,
+      "Đại": 106,
+      "Trưởng": 76
+    },
     "totalCount": 1390
   },
   "8/4": {
-    "Hiếu": 158,
-    "Điệp": 159,
-    "Long": 290,
+    "counts": {
+      "Hiếu": 158,
+      "Điệp": 159,
+      "Long": 290
+    },
     "totalCount": 607
   },
   "9/4": {
-    "Hiếu": 11,
-    "Nam": 96,
-    "Vinh": 416,
+    "counts": {
+      "Vinh": 416,
+      "Hiếu": 11,
+      "Nam": 96
+    },
     "totalCount": 523
   }
 }

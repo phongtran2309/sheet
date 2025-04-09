@@ -1,13 +1,12 @@
 const { google } = require("googleapis");
 const fs = require("fs");
+const path = require("path");
 
-// Danh sách tên cần thống kê
 const nameList = [
   "Trưởng", "Hiếu", "Nam", "Điệp", "Long",
   "Khu", "Vinh", "Huy", "Đại", "Dũng", "Thao"
 ];
 
-// Map chuẩn hoá: không dấu → có dấu
 const nameMap = {};
 nameList.forEach(name => {
   const normalized = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -21,98 +20,102 @@ const auth = new google.auth.GoogleAuth({
 
 const SHEET_ID = "1wDck3Pl8JhuaqQMyJKgVjc2os-DIAAmRM0bbDPyi7Kc";
 
-// Tạo danh sách ngày từ 28/3 đến hôm nay
 function getDateSheetNames() {
   const sheetNames = [];
-  const startDate = new Date(2025, 2, 28); // 28/3/2025
+  const startDate = new Date(2025, 2, 28);
   const today = new Date();
   let d = new Date(startDate);
-
   while (d <= today) {
     sheetNames.push(`${d.getDate()}/${d.getMonth() + 1}`);
     d.setDate(d.getDate() + 1);
   }
-
   return sheetNames;
 }
 
-async function countAllSenders() {
+function getFileNameFromSheet(sheetName) {
+  const [day, month] = sheetName.split("/").map(Number);
+  const dateObj = new Date(2025, month - 1, day);
+  return `${dateObj.getFullYear()}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}.txt`;
+}
+
+async function splitAccBySender() {
   try {
     const client = await auth.getClient();
     const sheets = google.sheets({ version: "v4", auth: client });
-
     const sheetNames = getDateSheetNames();
-    const finalTotalCountMap = {};
-    nameList.forEach(name => finalTotalCountMap[name] = 0);
-    let totalCount = 0;
 
-    const dailyStats = {};
+    const baseFolder = "tong_acc";
+    if (!fs.existsSync(baseFolder)) fs.mkdirSync(baseFolder);
+
+    nameList.forEach(name => {
+      const dir = path.join(baseFolder, name);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    });
+
+    let grandTotal = 0;
+    const thongKe = {};
 
     for (let sheetName of sheetNames) {
       try {
         const res = await sheets.spreadsheets.values.get({
           spreadsheetId: SHEET_ID,
-          range: `${sheetName}!I2:I`,
+          range: `${sheetName}!A2:I`,
         });
 
-        const values = res.data.values || [];
-        const countMapPerDay = {};
-        nameList.forEach(name => countMapPerDay[name] = 0);
+        const rows = res.data.values || [];
+        const dailyMap = {};
+        const countMap = {};
 
-        let dailyTotal = 0;
-
-        values.forEach(row => {
-          let rawName = row[0];
-          if (rawName) {
-            const normalized = rawName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        rows.forEach(row => {
+          const acc = row[0];       // Cột A
+          const senderRaw = row[8]; // Cột I
+          if (acc && acc.includes("@") && senderRaw) {
+            const normalized = senderRaw.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
             const mappedName = nameMap[normalized];
             if (mappedName) {
-              countMapPerDay[mappedName]++;
-              finalTotalCountMap[mappedName]++;
-              totalCount++;
-              dailyTotal++;
+              if (!dailyMap[mappedName]) dailyMap[mappedName] = [];
+              if (!countMap[mappedName]) countMap[mappedName] = 0;
+
+              dailyMap[mappedName].push(acc);
+              countMap[mappedName]++;
+              grandTotal++;
             }
           }
         });
 
-        // Chỉ giữ lại key có value > 0
-        const filteredMap = {};
-        for (let name in countMapPerDay) {
-          if (countMapPerDay[name] > 0) {
-            filteredMap[name] = countMapPerDay[name];
+        for (let name in dailyMap) {
+          const fileName = getFileNameFromSheet(sheetName);
+          const filePath = path.join(baseFolder, name, fileName);
+          fs.writeFileSync(filePath, dailyMap[name].join("\n"), "utf-8");
+        }
+
+        const filteredCounts = {};
+        let totalCount = 0;
+        for (let name in countMap) {
+          const count = countMap[name];
+          if (count > 0) {
+            filteredCounts[name] = count;
+            totalCount += count;
           }
         }
 
-        filteredMap.totalCount = dailyTotal;
-        dailyStats[sheetName] = filteredMap;
+        thongKe[sheetName] = {
+          counts: filteredCounts,
+          totalCount: totalCount,
+        };
 
-        console.log(`✅ Đã thống kê sheet: ${sheetName}`);
-      } catch (e) {
-        console.warn(`⚠️ Không thể đọc sheet "${sheetName}": ${e.message}`);
+        console.log(`✅ Đã xử lý sheet ${sheetName}`);
+      } catch (err) {
+        console.warn(`⚠️ Sheet "${sheetName}" lỗi hoặc không tồn tại.`);
       }
     }
 
-    // Ghi file JSON
-    fs.writeFileSync("thongKe.json", JSON.stringify(dailyStats, null, 2), "utf-8");
-    console.log("💾 Đã lưu thống kê theo từng ngày vào thongKe.json");
-
-    // In tổng tất cả ngày
-    const filteredFinalMap = {};
-    for (let name in finalTotalCountMap) {
-      if (finalTotalCountMap[name] > 0) {
-        filteredFinalMap[name] = finalTotalCountMap[name];
-      }
-    }
-
-    console.log("\n📊 Tổng thống kê tất cả ngày:");
-    console.log(JSON.stringify({
-      counts: filteredFinalMap,
-      totalCount
-    }, null, 2));
-
-  } catch (error) {
-    console.error("❌ Lỗi:", error);
+    fs.writeFileSync("thongKe.json", JSON.stringify(thongKe, null, 2), "utf-8");
+    console.log(`📦 Tổng số acc đã xử lý: ${grandTotal}`);
+    console.log("✅ Đã lưu thống kê vào thongKe.json");
+  } catch (err) {
+    console.error("❌ Lỗi tổng:", err);
   }
 }
 
-countAllSenders();
+splitAccBySender();
