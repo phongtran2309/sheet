@@ -1,0 +1,23 @@
+{
+  "name": "sheet",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phongtran2309/sheet.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phongtran2309/sheet/issues"
+  },
+  "homepage": "https://github.com/phongtran2309/sheet#readme",
+  "description": "",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "googleapis": "^148.0.0"
+  }
+}
