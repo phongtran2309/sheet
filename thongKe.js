@@ -110,9 +110,29 @@ async function splitAccBySender() {
       }
     }
 
-    fs.writeFileSync("thongKe.json", JSON.stringify(thongKe, null, 2), "utf-8");
-    console.log(`📦 Tổng số acc đã xử lý: ${grandTotal}`);
-    console.log("✅ Đã lưu thống kê vào thongKe.json");
+        // Ghi file thongKe.json
+        fs.writeFileSync("thongKe.json", JSON.stringify(thongKe, null, 2), "utf-8");
+
+        // Tính tổng số acc theo từng người
+        const totalByPerson = {};
+        for (const day in thongKe) {
+          const counts = thongKe[day].counts;
+          for (const name in counts) {
+            if (!totalByPerson[name]) totalByPerson[name] = 0;
+            totalByPerson[name] += counts[name];
+          }
+        }
+    
+        // Log số acc theo từng người
+        console.log("\n📊 Số acc theo từng người:");
+        for (const name in totalByPerson) {
+          console.log(`- ${name}: ${totalByPerson[name]}`);
+        }
+    
+        // Log tổng acc
+        console.log(`\n📦 Tổng số acc đã xử lý: ${grandTotal}`);
+        console.log("✅ Đã lưu thống kê vào thongKe.json");
+    
   } catch (err) {
     console.error("❌ Lỗi tổng:", err);
   }
